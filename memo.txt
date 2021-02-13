@@ -1,0 +1,5 @@
+cd C:\Users\tomyu\OneDrive\ドキュメント\JSstudy\nodejs-websocket
+node server.js
+http://localhost:3000/
+
+https://secure-shore-54417.herokuapp.com/ | https://git.heroku.com/secure-shore-54417.git

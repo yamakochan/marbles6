@@ -1,0 +1,27 @@
+◆nodejsインストール　
+https://github.com/nullivex/nodist/releases	nodist のインストーラーをダウンロード
+nodist -v					バージョン確認
+nodist dist					インストール可能な Node.js のバージョンのリスト Node.js は安定版が偶数バージョン
+https://github.com/nodejs/Release		Active LTSのバージョンを確認（currentはまだ）
+nodist + 12.18.3				v12.18.3をインストール
+nodist 12.18.3					使用するノードjsのバージョン指定
+node -v						nodejsのバージョン確認
+npm -v						npmのバージョンを確認
+https://nodejs.org/ja/download/releases/	nodejsのバージョンに対応するnpm バージョンを確認
+nodist npm 6.14.6				npmのバージョンを変更
+npm i npx -g					nodistだとNode.jsと一緒にnpxがインストールされないため個別にnpxをインストール
+
+
+◆http-serverのインストール
+npm install -g http-server
+
+
+◆http-server起動
+cd C:\Users\tomyu\Documents\JSstudy		動かしたいサイトのあるディレクトリへ移動
+http-server					httpserver起動
+http://localhost:8080/				ここにアクセスするとそのフォルダのファイル一覧が表示される
+止めたいときは、Ctrl+C
+
+cd C:\Users\tomyu\OneDrive\ドキュメント\JSstudy\marbles3
+http-server	
+http://localhost:8080/ohajiki.html
