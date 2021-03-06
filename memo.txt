@@ -1,5 +1,7 @@
-cd C:\Users\tomyu\OneDrive\ドキュメント\JSstudy\nodejs-websocket
+cd C:\Users\tomyu\OneDrive\ドキュメント\JSstudy\marbles5
 node server.js
 http://localhost:3000/
 
-https://secure-shore-54417.herokuapp.com/ | https://git.heroku.com/secure-shore-54417.git
+<heroku>
+https://mighty-beach-13882.herokuapp.com/ | https://git.heroku.com/mighty-beach-13882.git
+

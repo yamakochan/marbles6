@@ -1,42 +1,54 @@
 window.addEventListener('load',init);
 function init() {
-	// verとか書かないとglobal変数
-	cns_players = 2;		//プレイヤー数
-	cns_pieces = 4;         //駒の数
-	cns_speed = 30;         //駒の初速（1フレームで進む距離）の算出時、ドラッグした距離を当係数で割って算出
-	cns_friction = 1 / 50;  //摩擦係数
-	cns_reflection = 0.9      //反発係数
-	cns_duration = 1000;    //teenの期間　
-
 	const canvasElement = document.getElementById("myCanvas");
 	stage = new createjs.Stage(canvasElement);
 	cns_stageWidth = canvasElement.width;
 	cns_stageHeight = canvasElement.height;
+
+	//サウンド定義
+	createjs.Sound.registerSound("./sounds/hitsound.mp3", "hitsound");
+	createjs.Sound.registerSound("./sounds/wallsound.mp3", "wallsound");
+	createjs.Sound.registerSound("./sounds/destructionsound.mp3", "destruction");
+	createjs.Sound.registerSound("./sounds/mizudobon.mp3", "mizusound");
+
+	// タッチ操作をサポートしているブラウザーならばタッチ操作を有効にします。
+	if(createjs.Touch.isSupported() == true){
+ 		createjs.Touch.enable(stage);
+	}
+
+	createjs.Ticker.addEventListener("tick",stage); //自動更新を有効にする
+
+	//ブラウザの画面更新に適したタイミング「RAF」は１秒間に６０回発生する。60fpsを実現
+	// createjs.Ticker.timingMode = createjs.Ticker.RAF; //滑らかに
+
+	//１秒間に更新するフレーム数を指定。デフォルトは２４fps
+	createjs.Ticker.framerate = 40;
+}
+
+//自分の部屋のユーザリストを受け取る。自分のplayerNoはグローバルのuserNoをつかう。
+function initStage(argUserList) {
+	// verとか書かないとglobal変数
+	cns_players = argUserList.length;		//プレイヤー数
+	cns_pieces = 3;         //駒の数
+	cns_speed = 3;         //速さ係数（fps60のとき1。fpsが小さいと係数は大きくする必要がある）
+	cns_friction = 3 / 50;  //摩擦係数（fps60のとき1/50。fpsが小さいと係数は大きくする必要がある）
+	cns_reflection = 0.9      //反発係数
+	cns_duration = 1000;    //teenの期間　
+
 	cns_fieldWidth = 1001;
 	cns_fieldHeight = 1001;
 	cns_fieldleft = -500;
 	cns_fieldright = 500;
 	cns_fieldtop = -500;
 	cns_fieldbottom = 500;
-	cns_fieldsidemargin = 80;
-	cns_fieldvertmargin = 100;
+	cns_fieldsidemargin = 50;
+	cns_fieldvertmargin = 50;
 
 	field = new createjs.Container();
 	stage.addChild(field); 
 
 	info = new createjs.Container();
 	stage.addChild(info);
-
-	//サウンド定義
-	createjs.Sound.registerSound("./hitsound.mp3", "hitsound");
-	createjs.Sound.registerSound("./wallsound.mp3", "wallsound");
-	createjs.Sound.registerSound("./destructionsound.mp3", "destruction");
-	createjs.Sound.registerSound("./mizudobon.mp3", "mizusound");
-
-	// タッチ操作をサポートしているブラウザーならばタッチ操作を有効にします。
-	if(createjs.Touch.isSupported() == true){
- 		createjs.Touch.enable(stage);
-	}
 
     // 審判を作成
     judge = new Judge();
@@ -56,7 +68,7 @@ function init() {
 	info.addChild(background.XYinfo);
 
 	// structureの生成 constructor(arg_x,arg_y,arg_width,arg_height,arg_image,arg_i)
-	field.addChild(new Structure(-170,-230,161,159,"./pyramid.png",0));
+	field.addChild(new Structure(-170,-230,161,159,"./image/pyramid.png",0));
 
 	// zoneの生成 constructor(arg_x,arg_y,arg_H_radius,arg_V_radius,arg_i)
 	field.addChild(new Zone(-400,-450,350,400,20));
@@ -67,25 +79,28 @@ function init() {
     // playerを作成
     for (let i = 0; i < cns_players; i++){
     // playerを描画
-	    field.addChild(new Player(i,90 * i));
+	    field.addChild(new Player(i,argUserList[i],90 * i));
 	}
 	
 	//stage の描画を更新
 	stage.update();	
 
-	createjs.Ticker.addEventListener("tick",stage); //自動更新を有効にする
-	//	createjs.Ticker.framerate = 60;
-	//ブラウザの画面更新に適したタイミング「RAF」は１秒間に６０回発生する。60fpsを実現
-	createjs.Ticker.timingMode = createjs.Ticker.RAF; //滑らかに
-
 	judge.changeTurn();
 }
 
+function clearStage() {
+	stage.removeChild(field); 
+	stage.removeChild(info);
+
+	endGame();
+}
+
 class Player extends createjs.Container{
-	constructor(arg_playerno,arg_hue){
+	constructor(arg_playerno,arg_playername,arg_hue){
 		super();
 		//playerパラメータ
 		this.playerNo = arg_playerno;
+		this.playerName = arg_playername;
 		this.live = true;
 		this.currentPiece = 0;
 		//piece
@@ -97,8 +112,10 @@ class Player extends createjs.Container{
 	        let peak = i + 4;
 	        let hue = arg_hue + 18 * Math.random();
 	        let color = "hsl(" + hue + ", 90%, 50%)";
-	        let x = (cns_fieldWidth - 20) * Math.random() - 490;   //壁から10pix離す
-	        let y = (cns_fieldHeight - 20) * Math.random() - 490;  //壁から10pix離す
+	        // let x = (cns_fieldWidth - 20) * Math.random() - 490;   //壁から10pix離す
+	        // let y = (cns_fieldHeight - 20) * Math.random() - 490;  //壁から10pix離す
+	        let x = (cns_fieldWidth - 60) / (cns_pieces + 1) * (i + 1) - cns_fieldWidth / 2 + 30; 
+	        let y = (cns_fieldHeight - 60) / (cns_players - 1) * this.playerNo - cns_fieldHeight / 2 + 30;
 			let myStar = new MyStar(color,x,y,i,peak);
 			this.addChild(myStar);
 			this.pieceExistFlg[i] = 1;
@@ -107,9 +124,11 @@ class Player extends createjs.Container{
 		// キング作成
 	    let hue = arg_hue + 18 * Math.random();
 	    let color = "hsl(" + hue + ", 100%, 50%)";
-	    let x = (cns_fieldWidth - 40) * Math.random() - 480;   //壁から20pix離す
-	    let y = (cns_fieldHeight - 40) * Math.random() - 480;  //壁から20pix離す
-		let myKing = new MyKing(color,x,y,3,6);
+	    // let x = (cns_fieldWidth - 40) * Math.random() - 480;   //壁から20pix離す
+	    // let y = (cns_fieldHeight - 40) * Math.random() - 480;  //壁から20pix離す
+        let x = (cns_fieldWidth - 60) / (cns_pieces + 1) * cns_pieces - cns_fieldWidth / 2 + 30; 
+        let y = (cns_fieldHeight - 60) / (cns_players - 1) * this.playerNo - cns_fieldHeight / 2 + 30;
+		let myKing = new MyKing(color,x,y,cns_pieces - 1,6);
 		this.addChild(myKing);
 		this.pieceExistFlg[cns_pieces - 1] = 1;
 
@@ -121,12 +140,17 @@ class Player extends createjs.Container{
 
 class Judge{
 	constructor(){
-		this.playerCount = 0;
 		this.playerList = [];
 		this.currentPlayer = -1;
 
 		this.score = [];
 		this.currentscore = null;
+
+		//0:試合中　1:操作終了　2:試合終了
+		//judgeでwinnerが決まったら一旦操作終了とする。
+		//操作終了となったら、駒操作不可とする。（hitした他方のpieceから呼ばれたjudge,または運動中の駒がhitした場合に呼ばれたjudgeでdrawとなる可能性あり）
+		//操作終了となり、かつ運動中の駒がなくなったら、試合終了。→背景クリックでロビーに戻る。
+		this.end = 0; 
 
 		this.structureCount = 0;
 		this.structureList = [];
@@ -153,18 +177,18 @@ class Judge{
 	}
 
 	addPlayer(arg_player){
-		this.playerList[this.playerCount] = arg_player;
-		this.playerCount += 1;
+		this.playerList[arg_player.playerNo] = arg_player;
 	// スコアに表示
-	    this.score[this.playerCount - 1] =  new createjs.Text("", "14px sans-serif", "GhostWhite");
-		this.score[this.playerCount - 1].text = "Player" + this.playerCount + ": " + judge.playerList[this.playerCount - 1].pieceExistFlg.reduce((p,c) => p += c,0) + "p";
-	    this.score[this.playerCount - 1].textAlign = "left";
-	    this.score[this.playerCount - 1].textBaseline = "top";
-	    this.score[this.playerCount - 1].x = (cns_stageWidth - 20) / cns_players * (this.playerCount - 1) + 10;
-	    this.score[this.playerCount - 1].y = 10;
-		this.score[this.playerCount - 1].shadow = new createjs.Shadow("#000000", 3, 3, 5);
-		this.score[this.playerCount - 1].cache(-2,-2,100,30);
-	    info.addChild(this.score[this.playerCount - 1]);
+	    this.score[arg_player.playerNo] =  new createjs.Text("", "14px sans-serif", "GhostWhite");
+//		this.score[this.playerCount - 1].text = "Player" + this.playerCount + ": " + judge.playerList[this.playerCount - 1].pieceExistFlg.reduce((p,c) => p += c,0) + "p";
+		this.score[arg_player.playerNo].text = arg_player.playerName + ": " + judge.playerList[arg_player.playerNo].pieceExistFlg.reduce((p,c) => p += c,0) + "p";
+	    this.score[arg_player.playerNo].textAlign = "left";
+	    this.score[arg_player.playerNo].textBaseline = "top";
+	    this.score[arg_player.playerNo].x = (cns_stageWidth - 20) / cns_players * (arg_player.playerNo) + 10;
+	    this.score[arg_player.playerNo].y = 10;
+		this.score[arg_player.playerNo].shadow = new createjs.Shadow("#000000", 3, 3, 5);
+		this.score[arg_player.playerNo].cache(-2,-2,100,30);
+	    info.addChild(this.score[arg_player.playerNo]);
 	}
 
 	addStructure(arg_structure){
@@ -180,6 +204,7 @@ class Judge{
 
 	changeTurn(){
 		for (let i = 0; i < cns_players; i++){
+			//子要素にマウスイベントが伝搬されないようにする。
 			this.playerList[i].mouseChildren = false;
 		}
 
@@ -193,7 +218,10 @@ class Judge{
 				this.currentPlayer = 0;
 			}
 		}
-		this.playerList[this.currentPlayer].mouseChildren = true;
+
+		if(this.currentPlayer == userNo){
+			this.playerList[this.currentPlayer].mouseChildren = true;
+		}
 //
 		info.removeChild(this.currentscore);
 		this.currentscore = this.score[judge.currentPlayer].clone();
@@ -210,14 +238,16 @@ class Judge{
 		for (let i = 0; i < cns_players; i++) {
 			this.score[i].uncache();
 			let p_no = judge.playerList[i].pieceExistFlg.reduce((p,c) => p += c,0);
-			if(p_no == 0 | judge.playerList[i].pieceExistFlg[cns_pieces - 1] == 0){
-				this.score[i].text = "Player" + (i+1) + ": lose";
+			//全駒が生きていない場合、または最後の駒＊キングが生きてない場合、負け。
+			if(p_no == 0 || judge.playerList[i].pieceExistFlg[cns_pieces - 1] == 0){
+				this.score[i].text = judge.playerList[i].playerName + ": lose";
 				this.score[i].color = "DarkGray";
 				judge.playerList[i].live = false;
 			}else{
-				this.score[i].text = "Player" + (i+1) + ": " + p_no + "p";
+//				this.score[i].text = "Player" + (i+1) + ": " + p_no + "p";
+				this.score[i].text = judge.playerList[i].playerName + ": " + p_no + "p";
 				liveplayers += 1;
-				winner = i + 1;
+				winner = i;
 			}
 			this.score[i].cache(-2,-2,100,30);
 			if(i == judge.currentPlayer){
@@ -225,16 +255,32 @@ class Judge{
 			}
 		}
 		if(liveplayers == 1){
-			this.result =  new createjs.Text("Player" + winner + "  WIN!!", "24px sans-serif", "GhostWhite");
-	    	this.result.textAlign = "center";
+//			this.result =  new createjs.Text("Player" + winner + "  WIN!!", "24px sans-serif", "GhostWhite");
+			if(userNo == winner){
+				this.result =  new createjs.Text("YOU WIN!!", "24px sans-serif", "GhostWhite");
+			}else{
+				this.result =  new createjs.Text("YOU LOSE..", "24px sans-serif", "GhostWhite");
+			}
+			this.result.textAlign = "center";
 	    	this.result.textBaseline = "top";
 	    	this.result.x = cns_stageWidth / 2;
 	    	this.result.y = cns_stageHeight / 2 - 20;
    			this.result.shadow = new createjs.Shadow("#000000", 3, 3, 5);
 	    	info.addChild(this.result);
+	    	this.end = 1; //操作終了
+   			for (let i = 0; i < cns_players; i++){
+				//子要素にマウスイベントが伝搬されないようにする。
+				this.playerList[i].mouseChildren = false;
+			}
 		}
+
 		if(liveplayers == 0){
 			this.result.text = "DRAW";
+	    	this.end = 1; //操作終了
+   			for (let i = 0; i < cns_players; i++){
+				//子要素にマウスイベントが伝搬されないようにする。
+				this.playerList[i].mouseChildren = false;
+			}
 			// info.removeChild(this.result);
 			// this.result =  new createjs.Text("DRAW", "24px sans-serif", "GhostWhite");
 	    	// this.result.textAlign = "center";
@@ -528,8 +574,6 @@ class MyPiece extends createjs.Container{
     // ドラッグ中ステータス　（透明化、ｈｉｔ判定除外）
 		this.moving  =  2;
 
-		this.hitwall = false;
-		this.hitpiece = false;
  	}
 
     handleMove(event){
@@ -540,7 +584,31 @@ class MyPiece extends createjs.Container{
         }
     }
 
-	handleUp(event) {
+ 	handleUp(event){
+ 		socket.emit("serverPieceControl", {
+ 			playerNo: this.parent.playerNo ,
+ 			pieceNo: this.pieceNo,
+ 			backupPointX: this.backupPointX,
+ 			backupPointY: this.backupPointY,
+ 			x: this.x,
+ 			y: this.y,
+ 			alpha: this.alpha,
+ 			moving: this.moving,
+			nextX: this.nextX,
+	  		nextY: this.nextY,
+			distance: this.distance,
+			radians: this.radians,
+			dx: this.dx,
+			dy: this.dy,
+			accx: this.accx,
+			accy: this.accy
+		});
+ 	}
+
+	actPiece() {
+		this.hitwall = false;
+		this.hitpiece = false;
+
         if(this.alpha > 0 ){
         	this.setMovingPrm();
 		}
@@ -558,7 +626,7 @@ class MyPiece extends createjs.Container{
         this.alpha = 1.0;
     //元の位置に戻す
         this.x = this.backupPointX;
-        this.y = this.backupPointY
+        this.y = this.backupPointY;
 
        	judge.changeTurn();
 
@@ -604,7 +672,7 @@ class MyPiece extends createjs.Container{
 	update(){
 	//ドラッグ中透明化
 		if(this.moving == 2){
-	        this.alpha -= 0.015;
+	        this.alpha -= 0.015 * cns_speed;
     //ドラック距離算出
 	        if(this.alpha <= 0 ){
 	        	this.setMovingPrm();
@@ -687,8 +755,8 @@ class MyPiece extends createjs.Container{
    		else{
    	//this.weightは5～15を想定。10/this.weightで移動距離を出す。
 			this.radians = Math.atan2((this.nextY - this.backupPointY),(this.nextX - this.backupPointX));
-			this.dx = Math.cos(this.radians) * this.distance / cns_speed;
-    		this.dy = Math.sin(this.radians) * this.distance / cns_speed;
+			this.dx = Math.cos(this.radians) * this.distance / 30 * cns_speed;
+    		this.dy = Math.sin(this.radians) * this.distance / 30 * cns_speed;
 	   		this.accx = this.dx / (Math.abs(this.dx) + Math.abs(this.dy)) * this.weight / 10 * cns_friction;
 			this.accy = this.dy / (Math.abs(this.dx) + Math.abs(this.dy)) * this.weight / 10 * cns_friction;
 		}
@@ -702,8 +770,8 @@ class MyPiece extends createjs.Container{
 			let temp_y = Math.sin(angle) * this.bulletspeed;
 			let myBullet = new MyBullet(color,this.x + temp_x,this.y + temp_y,cns_pieces + i);
 			myBullet.radians = angle;
-			myBullet.dx = temp_x * 0.6;
-			myBullet.dy = temp_y * 0.6;
+			myBullet.dx = temp_x * 0.6 * cns_speed;
+			myBullet.dy = temp_y * 0.6 * cns_speed;
 			myBullet.accx = 0;
 			myBullet.accy = 0;
 			myBullet.moving = 1;
@@ -995,8 +1063,8 @@ class Destruction extends createjs.Container{
     	arc1.alpha = 1;
 		arc1.x = 0;
 		arc1.y = 0;
-		arc1.dx = (Math.random() - 0.5) * 40 / 20;
-    	arc1.dy = (Math.random() - 0.5) * 40 / 20;
+		arc1.dx = (Math.random() - 0.5) * 40 / 20 * cns_speed;;
+    	arc1.dy = (Math.random() - 0.5) * 40 / 20 * cns_speed;;
 	   	arc1.accx = arc1.dx / (Math.abs(arc1.dx) + Math.abs(arc1.dy)) * cns_friction/3;
 		arc1.accy = arc1.dy / (Math.abs(arc1.dx) + Math.abs(arc1.dy)) * cns_friction/3;
 		arc1.rtt = Math.random() * 6 - 3;
@@ -1011,8 +1079,8 @@ class Destruction extends createjs.Container{
     	arc2.alpha = 1;
 		arc2.x = 0;
 		arc2.y = 0;
-		arc2.dx = (Math.random() - 0.5) * 40 / 28;
-    	arc2.dy = (Math.random() - 0.5) * 40 / 28;
+		arc2.dx = (Math.random() - 0.5) * 40 / 28 * cns_speed;;
+    	arc2.dy = (Math.random() - 0.5) * 40 / 28 * cns_speed;;
 	   	arc2.accx = arc2.dx / (Math.abs(arc2.dx) + Math.abs(arc2.dy)) * cns_friction/3;
 		arc2.accy = arc2.dy / (Math.abs(arc2.dx) + Math.abs(arc2.dy)) * cns_friction/3;
 		arc2.rtt = Math.random() * 6 - 3;
@@ -1027,8 +1095,8 @@ class Destruction extends createjs.Container{
     	arc3.alpha = 1;
 		arc3.x = 0;
 		arc3.y = 0;
-		arc3.dx = (Math.random() - 0.5) * 40 / 25;
-    	arc3.dy = (Math.random() - 0.5) * 40 / 25;
+		arc3.dx = (Math.random() - 0.5) * 40 / 25 * cns_speed;;
+    	arc3.dy = (Math.random() - 0.5) * 40 / 25 * cns_speed;;
 	   	arc3.accx = arc3.dx / (Math.abs(arc3.dx) + Math.abs(arc3.dy)) * cns_friction/3;
 		arc3.accy = arc3.dy / (Math.abs(arc3.dx) + Math.abs(arc3.dy)) * cns_friction/3;
 		arc3.rtt = Math.random() * 6 - 3;
@@ -1051,8 +1119,8 @@ class Destruction extends createjs.Container{
     	    tri.alpha = 1;
 			tri.x = 0;
 			tri.y = 0;
-			tri.dx = (Math.random() - 0.5) * 40 / 25;
-    		tri.dy = (Math.random() - 0.5) * 40 / 25;
+			tri.dx = (Math.random() - 0.5) * 40 / 25 * cns_speed;;
+    		tri.dy = (Math.random() - 0.5) * 40 / 25 * cns_speed;;
 	   		tri.accx = tri.dx / (Math.abs(tri.dx) + Math.abs(tri.dy)) * cns_friction/3;
 			tri.accy = tri.dy / (Math.abs(tri.dx) + Math.abs(tri.dy)) * cns_friction/3;
 			tri.rtt = Math.random() * 6 - 3;
@@ -1166,7 +1234,7 @@ class Background extends MyPiece{
 
 		// let imageWidth = cns_fieldright - cns_fieldleft;
 		// let imageHight = cns_fieldbottom - cns_fieldtop;
-		let image = new createjs.Bitmap("./ike.png");
+		let image = new createjs.Bitmap("./image/ike.png");
 		
 		// image.setBounds(-500,-500,750,550);
 		// image.scaleX = imageWidth / image.getBounds().width;
@@ -1183,7 +1251,7 @@ class Background extends MyPiece{
     	this.on("mousedown", this.handleDown,this);
         this.on("pressmove", this.handleMove,this);
         this.on("pressup", this.handleUp,this);
-        this.on("dblclick", this.handledblclick,this);
+        // this.on("dblclick", this.handledblclick,this);
     }
 
     hitAction(own_dx,own_dy,another_dx,another_dy,arg_reflection,another_playerNo,another_pieceNo){
@@ -1213,55 +1281,76 @@ class Background extends MyPiece{
         	field.x = (stage.mouseX - this.dragPointX);
         	if(field.x * -1 < cns_fieldleft - cns_fieldsidemargin){
         		field.x = (cns_fieldleft - cns_fieldsidemargin) * -1;
-        	}
-        	if(field.x  * -1 > cns_fieldright - cns_stageWidth + cns_fieldsidemargin){
-        		field.x = (cns_fieldright - cns_stageWidth + cns_fieldsidemargin) * -1;
+        	}else{
+	        	if(field.x  * -1 > cns_fieldright - cns_stageWidth + cns_fieldsidemargin){
+	        		field.x = (cns_fieldright - cns_stageWidth + cns_fieldsidemargin) * -1;
+	        	}else{
+					this.prex2 = this.prex;
+					this.prex = field.x;
+	        	}
         	}
 
         	field.y = (stage.mouseY - this.dragPointY);
         	if(field.y * -1 < cns_fieldtop - cns_fieldvertmargin){
         		field.y = (cns_fieldtop - cns_fieldvertmargin) * -1;
+        	}else{
+	        	if(field.y  * -1 > cns_fieldbottom - cns_stageHeight + cns_fieldvertmargin){
+	        		field.y = (cns_fieldbottom - cns_stageHeight + cns_fieldvertmargin) * -1;
+	        	}else{
+					this.prey2 = this.prey;
+					this.prey = field.y;
+	        	}
         	}
-        	if(field.y  * -1 > cns_fieldbottom - cns_stageHeight + cns_fieldvertmargin){
-        		field.y = (cns_fieldbottom - cns_stageHeight + cns_fieldvertmargin) * -1;
-        	}
-			this.prex2 = this.prex;
-			this.prey2 = this.prey;
-			this.prex = field.x;
-			this.prey = field.y;
 		}
     }
 
 	handleUp(event) {
-		this.dx = (this.prex - this.prex2) / 4;
-		this.dy = (this.prey - this.prey2) / 4;
-		if(this.dx > 30){this.dx = 30};
-		if(this.dy > 30){this.dy = 30};
-		if(Math.abs(this.dx) > 8){this.dx = this.dx / Math.abs(this.dx) * 8};
-		if(Math.abs(this.dy) > 8){this.dy = this.dy / Math.abs(this.dy) * 8};
-		if(this.dx != 0 || this.dy != 0){
-			this.accx = this.dx / (Math.abs(this.dx) + Math.abs(this.dy)) * cns_friction;
-			this.accy = this.dy / (Math.abs(this.dx) + Math.abs(this.dy)) * cns_friction;
+		if(background.activate){
+			this.dx = (this.prex - this.prex2) / 4 * cns_speed;;
+			this.dy = (this.prey - this.prey2) / 4 * cns_speed;;
+			if(this.dx > 60){this.dx = 60};
+			if(this.dy > 60){this.dy = 60};
+			if(Math.abs(this.dx) > 8){this.dx = this.dx / Math.abs(this.dx) * 8};
+			if(Math.abs(this.dy) > 8){this.dy = this.dy / Math.abs(this.dy) * 8};
+			if(this.dx != 0 || this.dy != 0){
+				this.accx = this.dx / (Math.abs(this.dx) + Math.abs(this.dy)) * cns_friction;
+				this.accy = this.dy / (Math.abs(this.dx) + Math.abs(this.dy)) * cns_friction;
+			}
+			// if(this.dx == 0 && this.dy == 0 && this.activate){
+			if(this.dx == 0 && this.dy == 0 && this.prey2 == field.y && this.prex2 == field.x){
+				if(judge.end == 0){
+					let xPiece = judge.getcurrentPiece();
+					let nX = xPiece.x * -1 + cns_stageWidth / 2;
+					let nY = xPiece.y * -1 + cns_stageHeight / 2; 
+					let duration = 1000;
+					createjs.Tween.get(field, {override:true})
+					.to({x:nX, y:nY}, duration, createjs.Ease.cubicOut);
+				}else{
+					let moving = 0;
+					for (let i = 0; i < judge.playerList.length; i++){
+					    for(let j = 0; j < cns_pieces; j++){
+					    	if(judge.playerList[i].pieceExistFlg[j] == 1  &&  judge.playerList[i].children[j].moving == 1){
+					    		moving += 1;
+					    	}
+					    }
+					}
+					if(moving == 0){
+						judge.end = 2;
+						clearStage();
+					}
+				}
+			}
 		}
-		if(this.dx == 0 && this.dy == 0 && this.activate){
-			// let xPiece = judge.getcurrentPiece();
-			// let nX = xPiece.x * -1 + cns_stageWidth / 2;
-			// let nY = xPiece.y * -1 + cns_stageHeight / 2; 
-			// let duration = 1000;
-			// createjs.Tween.get(field, {override:true})
-			// .to({x:nX, y:nY}, duration, createjs.Ease.cubicOut);
-		}
-		this.activate = true;
     }
 
-    handledblclick(event){
-		let xPiece = judge.getcurrentPiece();
-		let nX = xPiece.x * -1 + cns_stageWidth / 2;
-		let nY = xPiece.y * -1 + cns_stageHeight / 2; 
-		let duration = 1000;
-		createjs.Tween.get(field, {override:true})
-		.to({x:nX, y:nY}, duration, createjs.Ease.cubicOut);
-    }
+  //   handledblclick(event){
+		// let xPiece = judge.getcurrentPiece();
+		// let nX = xPiece.x * -1 + cns_stageWidth / 2;
+		// let nY = xPiece.y * -1 + cns_stageHeight / 2; 
+		// let duration = 1000;
+		// createjs.Tween.get(field, {override:true})
+		// .to({x:nX, y:nY}, duration, createjs.Ease.cubicOut);
+  //   }
 
 	notActivate(){
 		this.activate = false;
