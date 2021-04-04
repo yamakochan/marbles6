@@ -1,0 +1,352 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"null",
+				"null\tabc"
+			],
+			[
+				"2",
+				"200\t(ohajiki_v5.js)"
+			],
+			[
+				"p",
+				"playerName\tabc"
+			],
+			[
+				"playerN",
+				"playerName\t23★ ⟠"
+			],
+			[
+				"playeN",
+				"playerName\tabc"
+			],
+			[
+				"let",
+				"let\tabc"
+			],
+			[
+				"room",
+				"room\tabc"
+			],
+			[
+				"tri",
+				"tri\tabc"
+			],
+			[
+				"stru",
+				"structureExistFlg\tabc"
+			],
+			[
+				"cla",
+				"classification\tabc"
+			],
+			[
+				"ano",
+				"another_pieceNo\tabc"
+			],
+			[
+				"y",
+				"y"
+			],
+			[
+				"cns_s",
+				"cns_stageHeight\tabc"
+			],
+			[
+				"cu",
+				"currentPiece\tabc"
+			],
+			[
+				"get",
+				"getcurrentPiece\tabc"
+			],
+			[
+				"pie",
+				"pieceExistFlg\tabc"
+			],
+			[
+				"hitw",
+				"hitwall\tabc"
+			],
+			[
+				"cns_stageH",
+				"cns_stageWidth\tabc"
+			],
+			[
+				"cns_",
+				"cns_fieldbottom\tabc"
+			],
+			[
+				"stage",
+				"stage.y\tabc"
+			],
+			[
+				"cns_fie",
+				"cns_fieldright\tabc"
+			],
+			[
+				"piec",
+				"pieceExistFlg\tabc"
+			],
+			[
+				"cns_sta",
+				"cns_stagebottom\tabc"
+			],
+			[
+				"j",
+				"j"
+			],
+			[
+				"i",
+				"i"
+			],
+			[
+				"hitp",
+				"hitpiece\tabc"
+			],
+			[
+				"hit",
+				"hitpieceNo\tabc"
+			],
+			[
+				"hitpi",
+				"hitpieceNo\tabc"
+			],
+			[
+				"ane",
+				"another_playerNo\tabc"
+			],
+			[
+				"pla",
+				"playerNo\tabc"
+			],
+			[
+				"this",
+				"this\tabc"
+			],
+			[
+				"txt",
+				"text"
+			],
+			[
+				"dx",
+				"dx"
+			],
+			[
+				"te",
+				"text\t(circles.html)"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 157.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles6/public/js/ohajiki_v5.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles5/public/index.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles5/public/js/client.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles5/server.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles5/public/js/ohajiki_v5.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/backup/circles - コピー.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/backup/circles.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/ohajiki.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles5/package.json",
+		"/C/Users/tomyu/AppData/Local/Temp/kite_tutorial.py",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/js/client.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/index.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/server.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/js/ohajiki_v5.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles2/ohajiki_v3.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/ohajiki.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles3/ohajiki_v4.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/js/ohajiki_v4.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/server.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles4/public/client.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/public/index.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/public/client.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/package.json",
+		"/C/Users/tomyu/package.json",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/index.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/nodejs-websocket/sever.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles2/ohajiki_v2.js",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles3/ohajiki.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles2/ohajiki.html",
+		"/C/Users/tomyu/OneDrive/ドキュメント/JSstudy/marbles2/menu.html",
+		"/C/Users/tomyu/Documents/JSstudy/backup/circles.html",
+		"/C/Users/tomyu/Documents/JSstudy/marbles/ohajiki_v2.js",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki.html",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki_v2.js",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki_v3.js",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki_home.html",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki.js",
+		"/C/Users/tomyu/Documents/JSstudy/backup/20200607_ohajiki.js",
+		"/C/Users/tomyu/Documents/JSstudy/circles.html",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki_smapho2.html",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki_experiment.js",
+		"/C/Users/tomyu/Documents/JSstudy/ohajiki - コピー.html",
+		"/C/Users/tomyu/Documents/JSstudy/studyV3.js",
+		"/C/Users/tomyu/Downloads/Package Control.sublime-package"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 36.8
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "ohajiki_v6.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 186.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

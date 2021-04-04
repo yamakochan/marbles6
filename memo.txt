@@ -2,6 +2,9 @@ cd C:\Users\tomyu\OneDrive\ドキュメント\JSstudy\marbles5
 node server.js
 http://localhost:3000/
 
+<git>
+https://github.com/yamakochan/marbles6.git
+
 <heroku>
 https://mighty-beach-13882.herokuapp.com/ | https://git.heroku.com/mighty-beach-13882.git
 
